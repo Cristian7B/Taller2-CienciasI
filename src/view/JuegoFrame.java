@@ -16,6 +16,7 @@ public final class JuegoFrame extends JFrame {
     private final List<Pastor> pila;
 
     public JuegoFrame() {
+        cantidadJugadores();
         setTitle("Mesa de Pastores");
         setSize(900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -122,7 +123,33 @@ public final class JuegoFrame extends JFrame {
         }
     }
 
-    
+    public void robarDePila() {
+        if (!pila.isEmpty()) {
+            Pastor p = pila.remove(pila.size() - 1); // LIFO
+            // Aquí podrías agregar lógica para asignar el pastor robado a un jugador específico
+            actualizarMesaYPila();
+        }
+    }
+
+    public void cantidadJugadores() {
+        String input = JOptionPane.showInputDialog(null,
+                "Ingrese la cantidad de jugadores:",
+                "Cantidad de jugadores",
+                JOptionPane.QUESTION_MESSAGE);
+        if (input != null && !input.trim().isEmpty()) {
+            try {
+                int n = Integer.parseInt(input.trim());
+                JOptionPane.showMessageDialog(null,
+                        "Se ingresaron " + n + " jugadores.");
+                // Aquí ya puedes pasar 'n' al controlador
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null,
+                        "Por favor ingrese un número válido",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+    }
 
     // Método para actualizar la info del turno
     public void mostrarTurno(Pastor pastor) {
