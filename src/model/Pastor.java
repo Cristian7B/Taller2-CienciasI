@@ -5,6 +5,7 @@ public class Pastor {
     private int dinero;
     private int creyentes;
     private String oficio;
+    private int posicion; // posición en la lista circular
 
 
     public Pastor(int dinero, int creyentes) {
@@ -57,6 +58,14 @@ public class Pastor {
 
     public void setOficio(String oficio) {
         this.oficio = oficio;
+    }
+
+    public int getPosicion() {
+        return posicion;
+    }
+    
+    public void setPosicion(int posicion) {
+        this.posicion = posicion;
     }
 
 }

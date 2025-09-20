@@ -400,6 +400,37 @@ public class ListaCircularDoble<T> {
         return clon;
     }
 
+    public Pastor obtenerPrimerPastor() {
+        if (estaVacia()) {
+            return null;
+        }
+        return (Pastor) getCabeza().getDato();
+    }
+
+
+    public Pastor obtenerUltimoPastor() {
+        if (estaVacia()) {
+            return null;
+        }
+        return (Pastor) this.ultimo.getDato();
+    }
+
+    public Pastor obtenerPastorPorPosicion(int posicion) {
+        if (estaVacia()) {
+            return null;
+        }
+        NodoDoble<T> actual = getCabeza();
+        for (int i = 0; i < this.tamanno; i++) {
+            Pastor pastor = (Pastor) actual.getDato();
+            if (pastor.getPosicion() == posicion) {
+                return pastor;
+            }
+            actual = actual.getSiguiente();
+        }
+        return null; // No se encontró ningún pastor con la posición dada
+    }
+
+
     /**
      * Imprime una representación textual de la lista circular en la consola estándar.
      * Muestra los elementos desde la cabeza, indicando la conexión final a la cabeza.
