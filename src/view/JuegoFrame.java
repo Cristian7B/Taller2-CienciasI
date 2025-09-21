@@ -14,9 +14,9 @@ public final class JuegoFrame extends JFrame {
 
     private final JLabel infoJugador; // etiqueta para mostrar datos
     private final JPanel panelMesa; // panel para la mesa y pila
-    private JButton btnAccion1;
-    private JButton btnAccion2;
-    private JButton btnAccion3;
+    private JButton btnAtacar;
+    private JButton btnResucitar;
+    private JButton btnRobar;
     
 
     public JuegoFrame() {
@@ -57,20 +57,20 @@ public final class JuegoFrame extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         Font emojiFont = new Font("Segoe UI Emoji", Font.BOLD, 14);
 
-        btnAccion1 = new JButton("⚔️ Atacar");
-        btnAccion2 = new JButton("✝️ Resucitar");
-        btnAccion3 = new JButton("🛡️ Robar");
+        btnAtacar = new JButton("⚔️ Atacar");
+        btnResucitar = new JButton("✝️ Resucitar");
+        btnRobar = new JButton("🛡️ Robar");
 
-        for (JButton btn : Arrays.asList(btnAccion1, btnAccion2, btnAccion3)) {
+        for (JButton btn : Arrays.asList(btnAtacar, btnResucitar, btnRobar)) {
             btn.setBackground(new Color(200, 200, 200));
             btn.setFont(emojiFont);
             btn.setFocusPainted(false);
             btn.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         }
 
-        panelBotones.add(btnAccion1);
-        panelBotones.add(btnAccion2);
-        panelBotones.add(btnAccion3);
+        panelBotones.add(btnAtacar);
+        panelBotones.add(btnResucitar);
+        panelBotones.add(btnRobar);
 
         return panelBotones;
     }
@@ -120,16 +120,14 @@ public final class JuegoFrame extends JFrame {
         JOptionPane.showMessageDialog(null, mensaje, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void setAccionAtacar(ActionListener listener) {
-        btnAccion1.addActionListener(listener);
+    public void setBtnAtacarListener(ActionListener listener) {
+        btnAtacar.addActionListener(listener);
     }
-
-    public void setAccionResucitar(ActionListener listener) {
-        btnAccion2.addActionListener(listener);
+    public void setBtnResucitarListener(ActionListener listener) {
+        btnResucitar.addActionListener(listener);
     }
-
-    public void setAccionRobar(ActionListener listener) {
-        btnAccion3.addActionListener(listener);
+    public void setBtnRobarListener(ActionListener listener) {
+        btnRobar.addActionListener(listener);
     }
 
 }

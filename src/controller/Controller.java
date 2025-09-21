@@ -80,14 +80,13 @@ public final class Controller {
         int numJugadores = Integer.parseInt(jugadores);
         controllerPastor.crearListaPastores(numJugadores);
 
+        System.out.println("Lista circular creada con " + pastorList.getTamanno() + " pastores.");
+        llenarListaAuxiliar();
         turnoActual = pastorMasRico();
         controllerVista.mostrarTurno(turnoActual);
         controllerVista.mostrarMensaje("\"El pastor más rico es: " + turnoActual.getNombre() + " con " + turnoActual.getDinero() + " monedas.");
 
-        // Llenar la lista auxiliar para la vista
-        for (int i = 0; i < pastorList.getTamanno(); i++) {
-            pastores.add(pastorList.obtenerPastorPorPosicion(i));
-        }
+        
         controllerVista.actualizarMesaYPila(pastores, pila);
         controllerVista.mostrarJuego();
         direccion = controllerVista.pedirDireccion();
@@ -118,33 +117,100 @@ public final class Controller {
         }
     }
 
+    /*
+     * Obtiene el pastor más pobre de la mesa.
+     * @return Pastor con menos recursos
+     * 
+     */
     public Pastor pastorMasPobre() {
         return controllerJuego.obtenerMasPobre();
     }
 
+    /*
+     * Obtiene el pastor más rico de la mesa.
+     * @return Pastor con más recursos
+     * 
+     */
     public Pastor pastorMasRico() {
         return controllerJuego.obtenerMasRico(pastorList);
     }
 
-    public void eliminarVecino(Pastor actual, int pasos) {
+    /*
+     * El pastor más pobre roba un tercio de los recursos al más rico.
+     * @param pobre Pastor más pobre
+     * @param rico Pastor más rico
+     * 
+     */
+    public void eliminarVecino(int pasos) {
         if(validarPilaVacia()){
-            controllerJuego.eliminarPastorMenosFeligreses(actual, direccion, pasos);
+            System.out.println("turn actual: " + turnoActual.getNombre() + ", posición: " + turnoActual.getPosicion() + ", pasos: " + pasos + ", dirección: " + direccion);
+            controllerJuego.eliminarPastorMenosFeligreses(turnoActual, direccion, pasos);
+        }else{
+            controllerJuego.eliminarVecino(turnoActual, direccion, pasos);
         }
-        controllerJuego.eliminarVecino(actual, direccion, pasos);
+        llenarListaAuxiliar();
+        cambioDeTurno();
+        controllerVista.actualizarMesaYPila(pastores, pila);
     }
 
-    public void rescatarDePila(Pastor actual) {
+    /*
+     * Resucita al último pastor de la pila y lo añade a la lista circular.
+     * Si la pila está vacía, muestra un mensaje de error.
+     * @return true si se resucitó un pastor, false si la pila estaba vacía.
+     */
+    public void rescatarDePila() {
         if(!validarPilaVacia()){
-            controllerJuego.resucitarDesdePila(actual);
+            controllerJuego.resucitarDesdePila(turnoActual);
+            controllerVista.mostrarMensaje("El pastor " + turnoActual.getNombre() + " ha sido resucitado.");
+            controllerVista.actualizarMesaYPila(pastores, pila);
+            cambioDeTurno();
         }
     }
 
-    public void resucitarDePila(Pastor actual) {
-        controllerJuego.resucitarDesdePila(actual);
+    /*
+     * Resucita al último pastor de la pila, dándole la mitad
+     * de los recursos del pastor actual.
+     *
+     * @param actual Pastor que decide resucitar
+     */
+    public void resucitarDePila() {
+        controllerJuego.resucitarDesdePila(turnoActual);
+    }
+
+    public void robarRicoAPobre() {
+        if(turnoActual.equals(pastorMasPobre())){
+            controllerJuego.robarUnTercio(pastorMasPobre(), pastorMasRico());
+            controllerVista.actualizarMesaYPila(pastores, pila);
+            cambioDeTurno();
+        }else{
+            controllerVista.mostrarMensaje("Solo el pastor más pobre puede robar.");
+        }
+        
     }
 
     
+    /*
+     * Cambia el turno al siguiente pastor según la dirección actual.
+     * Actualiza la vista para mostrar el nuevo turno.
+     */
     public void cambioDeTurno(){
+        if (direccion.equals("derecha")) {
+            turnoActual = pastorList.obtenerSiguiente(turnoActual);
+        } else {
+            turnoActual = pastorList.obtenerAnterior(turnoActual);
+        }
+        controllerVista.mostrarTurno(turnoActual);
+    }
+
+    public void llenarListaAuxiliar(){
+        pastores.clear(); // Limpiar la lista antes de llenarla
+
+        // Llenar la lista auxiliar para la vista
+        System.out.println("tamaño lista circular: " + pastorList.getTamanno());
+        for (int i = 0; i < pastorList.getTamanno(); i++) {
+            pastores.add(pastorList.obtenerPastorPorPosicion(i));
+            System.out.println("Pastor en lista auxiliar: " + pastores.get(i).getNombre());
+        }
 
     }
 

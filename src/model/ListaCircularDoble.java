@@ -401,6 +401,47 @@ public class ListaCircularDoble<T> {
         return clon;
     }
 
+
+    /*
+     * Devuelve el elemento que sigue al nodo que contiene {@code datoActual}.
+     * Si {@code datoActual} no se encuentra, devuelve {@code null}.
+     * La búsqueda es O(n).
+     * @param datoActual El dato del nodo actual.
+     * @return El dato del siguiente nodo, o {@code null} si no se encuentra.
+     * @throws NoSuchElementException si la lista está vacía.
+     */
+    public T obtenerSiguiente(T datoActual) {
+        NodoDoble<T> nodoActual = buscarNodo(datoActual);
+        if (nodoActual == null) {
+            return null; // No se encontró el nodo con el dato dado
+        }
+        return nodoActual.getSiguiente().getDato();
+    }
+
+    /*
+     * Devuelve el elemento que precede al nodo que contiene {@code datoActual}.
+     * Si {@code datoActual} no se encuentra, devuelve {@code null}.
+     * La búsqueda es O(n).
+     * @param datoActual El dato del nodo actual.
+     * @return El dato del nodo anterior, o {@code null} si no se encuentra.
+     * @throws NoSuchElementException si la lista está vacía.
+     */
+    public T obtenerAnterior(T datoActual) {
+        NodoDoble<T> nodoActual = buscarNodo(datoActual);
+        if (nodoActual == null) {
+            return null; // No se encontró el nodo con el dato dado
+        }
+        return nodoActual.getAnterior().getDato();
+    }
+
+
+    /*
+     * Devuelve el pastor más rico según el dinero.
+     * Si la lista está vacía, devuelve null.
+     * Recorre toda la lista una vez, comparando cada pastor con el más rico encontrado
+     * hasta el momento.
+     * @return El pastor más rico, o null si la lista está vacía.
+     */
     public Pastor obtenerPrimerPastor() {
         if (estaVacia()) {
             return null;
@@ -409,6 +450,11 @@ public class ListaCircularDoble<T> {
     }
 
 
+    /*
+     * Devuelve el último pastor en la lista.
+     * Si la lista está vacía, devuelve null.
+     * @return El último pastor, o null si la lista está vacía.
+     */
     public Pastor obtenerUltimoPastor() {
         if (estaVacia()) {
             return null;
@@ -416,6 +462,13 @@ public class ListaCircularDoble<T> {
         return (Pastor) this.ultimo.getDato();
     }
 
+    /*
+     * Devuelve el pastor que tiene la posición especificada.
+     * Si no se encuentra ningún pastor con esa posición, devuelve null.
+     * La búsqueda es O(n).
+     * @param posicion La posición del pastor a buscar.
+     * @return El pastor con la posición dada, o null si no se encuentra.
+     */
     public Pastor obtenerPastorPorPosicion(int posicion) {
         if (estaVacia()) {
             return null;

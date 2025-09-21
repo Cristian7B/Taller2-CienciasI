@@ -93,12 +93,21 @@ public class ControllerJuego {
                     throw new IllegalArgumentException("Dirección inválida: use 'derecha' o 'izquierda'");
             }
         }
+        modificarPosiciones(nodoActual.getDato());
         pastorList.eliminar(nodoActual.getDato());
         pila.add(nodoActual.getDato());
         reorganizarMesa();
         return true;
     }
 
+    /**
+     * Elimina al vecino con menos feligreses entre los contados
+     * y lo envía a la pila, transfiriendo sus recursos al pastor actual.
+     *
+     * @param actual Pastor que elimina
+     * @param direccion dirección del conteo
+     * @param pasos número de pasos a recorrer
+     */
     public void eliminarPastorMenosFeligreses(Pastor actual, String direccion, int pasos) {
         if (pastorList.estaVacia()) {
             return; // no hay nada que hacer
@@ -117,6 +126,7 @@ public class ControllerJuego {
                 : nodoActual.getAnterior();
 
         Pastor menosFeligreses = candidato.getDato();
+        
 
         // Recorremos hasta "pasos" vecinos
         for (int i = 1; i < pasos; i++) {
@@ -134,10 +144,25 @@ public class ControllerJuego {
         actual.setCreyentes(actual.getCreyentes() + menosFeligreses.getCreyentes());
         actual.setDinero(actual.getDinero() + menosFeligreses.getDinero());
 
+        modificarPosiciones(menosFeligreses);
         // Eliminamos al que tiene menos creyentes
         pastorList.eliminar(menosFeligreses);
         pila.add(menosFeligreses);
+        for (Pastor p : pila) {
+            System.out.println("Pila contiene: " + p.getNombre());
+            
+        }
         reorganizarMesa();
+    }
+
+    public void modificarPosiciones(Pastor pastorEliminado) {
+        //modificar posicion de los pastores en la lista
+        for (int i = 0; i < pastorList.getTamanno(); i++) {
+            Pastor p = pastorList.obtenerPastorPorPosicion(i);
+            if (p.getPosicion() > pastorEliminado.getPosicion()) {
+                p.setPosicion(p.getPosicion() - 1);
+            }
+        }
     }
 
     /**
@@ -177,7 +202,18 @@ public class ControllerJuego {
      * @param rico Pastor más rico
      */
     public void robarUnTercio(Pastor pobre, Pastor rico) {
-        // TODO: implementar
+        if (pobre == null || rico == null) {
+            return; // No hay pastores para robar
+        }
+
+        int dineroRobado = rico.getDinero() / 3;
+        int creyentesRobados = rico.getCreyentes() / 3;
+
+        rico.setDinero(rico.getDinero() - dineroRobado);
+        rico.setCreyentes(rico.getCreyentes() - creyentesRobados);
+
+        pobre.setDinero(pobre.getDinero() + dineroRobado);
+        pobre.setCreyentes(pobre.getCreyentes() + creyentesRobados);
     }
 
     /**

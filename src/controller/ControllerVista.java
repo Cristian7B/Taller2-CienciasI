@@ -4,13 +4,14 @@ import model.ListaCircularDoble;
 import model.Pastor;
 import view.JuegoFrame;
 
-public class ControllerVista {
+public final class ControllerVista {
     private Controller controller;
     private JuegoFrame juegoFrame;
 
     public ControllerVista(Controller controller) {
         this.controller = controller;
         this.juegoFrame = new JuegoFrame();
+        agregarAcciones();
     }
 
     public void mostrarJuego() {
@@ -35,6 +36,18 @@ public class ControllerVista {
 
     public String pedirDireccion() {
         return juegoFrame.direccionJuego();
+    }
+
+    public void agregarAcciones() {
+        juegoFrame.setBtnAtacarListener(e -> {
+            controller.eliminarVecino(controller.getTurnoActual().getPosicion()); // Eliminar vecino a partir de la posición actual
+        });
+        juegoFrame.setBtnResucitarListener(e -> {
+            controller.resucitarDePila(); // Resucitar desde pila
+        });
+        juegoFrame.setBtnRobarListener(e -> {
+            controller.robarRicoAPobre();
+        });
     }
 
     public ListaCircularDoble<Pastor> getListaPastores() {
