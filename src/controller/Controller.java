@@ -27,8 +27,16 @@ public final class Controller {
     /** Controlador del modelo Pastor, encargado de crear y manipular la lista circular. */
     private final ControllerPastor controllerPastor;
 
+    /** Controlador del juego, encargado de la lógica del juego (turnos, eliminación, etc). */
+    private ControllerJuego controllerJuego;
+
+    private Pastor turnoActual;
+
     /** Lista circular doble que contiene a los pastores activos en el juego. */
     private ListaCircularDoble<Pastor> pastorList;
+
+    /** Dirección actual del turno ("izquierda" o "derecha"). */
+    private String direccion;
 
     /** Lista lineal de pastores (para uso directo en la vista). */
     private ArrayList<Pastor> pastores;
@@ -48,6 +56,9 @@ public final class Controller {
         this.pastorList = new ListaCircularDoble<>();
         this.pastores = new ArrayList<>();
         this.pila = new ArrayList<>();
+        this.controllerJuego = new ControllerJuego(pastorList, pila);
+        this.direccion = ""; // Dirección inicial por defecto
+        this.turnoActual = null;
         run();
     }
 
@@ -69,14 +80,18 @@ public final class Controller {
         int numJugadores = Integer.parseInt(jugadores);
         controllerPastor.crearListaPastores(numJugadores);
 
-        for (int i = 0; i < pastorList.getTamanno(); i++) {
-            Pastor p = pastorList.obtenerPastorPorPosicion(i);
-            pastores.add(p);
-        }
+        turnoActual = pastorMasRico();
+        controllerVista.mostrarTurno(turnoActual);
+        controllerVista.mostrarMensaje("\"El pastor más rico es: " + turnoActual.getNombre() + " con " + turnoActual.getDinero() + " monedas.");
 
-        controllerVista.mostrarTurno(pastorMasRico(pastores));
+        // Llenar la lista auxiliar para la vista
+        for (int i = 0; i < pastorList.getTamanno(); i++) {
+            pastores.add(pastorList.obtenerPastorPorPosicion(i));
+        }
         controllerVista.actualizarMesaYPila(pastores, pila);
         controllerVista.mostrarJuego();
+        direccion = controllerVista.pedirDireccion();
+
     }
 
     /**
@@ -94,15 +109,42 @@ public final class Controller {
         }
     }
 
-    public Pastor pastorMasRico(ArrayList<Pastor> pastores) {
-        Pastor masRico = pastores.get(0);
-        for (Pastor p : pastores) {
-            if (p.getDinero() > masRico.getDinero()) {
-                masRico = p;
-            }
+    public boolean validarPilaVacia() {
+        if (pila.isEmpty()) {
+            controllerVista.mostrarMensaje("La pila está vacía. No se puede resucitar a ningún pastor.");
+            return true;
+        } else {
+            return false;
         }
-        controllerVista.mostrarMensaje("El pastor más rico es: " + masRico.getNombre() + " con " + masRico.getDinero() + " monedas.");
-        return masRico;
+    }
+
+    public Pastor pastorMasPobre() {
+        return controllerJuego.obtenerMasPobre();
+    }
+
+    public Pastor pastorMasRico() {
+        return controllerJuego.obtenerMasRico(pastorList);
+    }
+
+    public void eliminarVecino(Pastor actual, int pasos) {
+        if(validarPilaVacia()){
+            controllerJuego.eliminarPastorMenosFeligreses(actual, direccion, pasos);
+        }
+        controllerJuego.eliminarVecino(actual, direccion, pasos);
+    }
+
+    public void rescatarDePila(Pastor actual) {
+        if(!validarPilaVacia()){
+            controllerJuego.resucitarDesdePila(actual);
+        }
+    }
+
+    public void resucitarDePila(Pastor actual) {
+        controllerJuego.resucitarDesdePila(actual);
+    }
+
+    public void cambioDeTurno(){
+        
     }
 
     // ========================
@@ -163,5 +205,47 @@ public final class Controller {
      */
     public void setPila(ArrayList<Pastor> pila) {
         this.pila = pila;
+    }
+
+    /**
+     * @return el controlador del juego.
+     */
+    public ControllerJuego getControllerJuego() {
+        return controllerJuego;
+    }
+
+    /**
+     * @param controllerJuego el controlador del juego a establecer.
+     */
+    public void setControllerJuego(ControllerJuego controllerJuego) {
+        this.controllerJuego = controllerJuego;
+    }
+
+    /*
+     * @return la dirección actual del juego ("izquierda" o "derecha").
+     */
+    public String getDireccion() {
+        return direccion;
+    }
+
+    /*
+     * @param direccion la dirección del juego a establecer ("izquierda" o "derecha").
+     */
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    /*
+     * @return el pastor cuyo turno es actualmente.
+     */
+    public Pastor getTurnoActual() {
+        return turnoActual;
+    }
+
+    /*
+     * @param turnoActual el pastor al que se le asigna el turno actual.
+     */
+    public void setTurnoActual(Pastor turnoActual) {
+        this.turnoActual = turnoActual;
     }
 }

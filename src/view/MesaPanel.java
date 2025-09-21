@@ -86,4 +86,22 @@ public class MesaPanel extends JPanel {
             g2d.drawString(p.getNombre(), baseX + 10, y + alturaBloque / 2);
         }
     }
+
+    // Getters y Setters
+
+    public ArrayList<Pastor> getPastores() {
+        return pastores;
+    }
+
+    public void setPastores(ArrayList<Pastor> pastores) {
+        this.pastores = pastores;
+    }
+
+    public ArrayList<Pastor> getPila() {
+        return pila;
+    }
+
+    public void setPila(ArrayList<Pastor> pila) {
+        this.pila = pila;
+    }
 }

@@ -1,6 +1,7 @@
 package model;
 
 
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -63,7 +64,7 @@ public class ListaCircularDoble<T> {
      * El acceso es O(1) a través de la referencia {@code ultimo}.
      * @return El {@link NodoDoble} cabeza, o {@code null} si la lista está vacía.
      */
-    private NodoDoble<T> getCabeza() {
+    public NodoDoble<T> getCabeza() {
         // Si no está vacía, la cabeza es el siguiente del último nodo.
         return estaVacia() ? null : this.ultimo.getSiguiente();
     }
@@ -464,7 +465,7 @@ public class ListaCircularDoble<T> {
      * @param datoBusqueda El dato a buscar.
      * @return El {@link NodoDoble} que contiene el dato, o {@code null} si no se encuentra.
      */
-    private NodoDoble<T> buscarNodo(T datoBusqueda) {
+    public NodoDoble<T> buscarNodo(T datoBusqueda) {
         if (estaVacia()) {
             return null;
         }
@@ -477,6 +478,34 @@ public class ListaCircularDoble<T> {
         }
         return null; // No encontrado después de una vuelta completa
     }
+
+    
+    /*
+     * Busca y devuelve el elemento "más rico" según el comparador proporcionado.
+     * Si la lista está vacía, devuelve null.
+     * Recorre toda la lista una vez, comparando cada elemento con el mejor encontrado
+     * hasta el momento.
+     * @param comparador El comparador que define el criterio de "más rico".
+     * @return El elemento "más rico", o null si la lista está vacía.
+     * @throws NullPointerException si el comparador es null.
+     */
+    public T obtenerMasRico(Comparator<T> comparador) {
+        if (estaVacia()){
+            return null;
+        }
+        NodoDoble<T> actual = getCabeza();
+        T mejor = actual.getDato();
+
+        for (int i = 0; i < this.tamanno; i++) {
+            T candidato = actual.getDato();
+            if (comparador.compare(candidato, mejor) > 0) {
+                mejor = candidato;
+            }
+            actual = actual.getSiguiente();
+        }
+        return mejor;
+    }
+
 
     /**
      * Busca el nodo que precede inmediatamente al primer nodo que contiene {@code datoBusqueda}.

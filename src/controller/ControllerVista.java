@@ -25,6 +25,18 @@ public class ControllerVista {
         juegoFrame.mostrarMensaje(mensaje);
     }
 
+    public void actualizarMesaYPila(java.util.ArrayList<Pastor> pastores, java.util.ArrayList<Pastor> pila) {
+        juegoFrame.actualizarMesaYPila(pastores, pila);
+    }
+
+    public void mostrarTurno(Pastor pastor) {
+        juegoFrame.mostrarTurno(pastor);
+    }
+
+    public String pedirDireccion() {
+        return juegoFrame.direccionJuego();
+    }
+
     public ListaCircularDoble<Pastor> getListaPastores() {
         return controller.getPastorList();
     }
@@ -45,14 +57,9 @@ public class ControllerVista {
     public void setJuegoFrame(JuegoFrame juegoFrame) {
         this.juegoFrame = juegoFrame;
     }
+    
 
-    public void actualizarMesaYPila(java.util.ArrayList<Pastor> pastores, java.util.ArrayList<Pastor> pila) {
-        juegoFrame.actualizarMesaYPila(pastores, pila);
-    }
-
-    public void mostrarTurno(Pastor pastor) {
-        juegoFrame.mostrarTurno(pastor);
-    }
+    
 
     
 }
