@@ -2,6 +2,7 @@ package controller;
 
 import java.util.ArrayList;
 import model.ListaCircularDoble;
+import model.NodoDoble;
 import model.Pastor;
 
 /**
@@ -81,16 +82,14 @@ public final class Controller {
         controllerPastor.crearListaPastores(numJugadores);
 
         System.out.println("Lista circular creada con " + pastorList.getTamanno() + " pastores.");
-        llenarListaAuxiliar();
         turnoActual = pastorMasRico();
         controllerVista.mostrarTurno(turnoActual);
-        controllerVista.mostrarMensaje("\"El pastor más rico es: " + turnoActual.getNombre() + " con " + turnoActual.getDinero() + " monedas.");
+        controllerVista.mostrarMensaje("El pastor más rico es: " + turnoActual.getNombre() + " con " + turnoActual.getDinero() + " monedas.");
 
-        
+        pastores = convertirListaCircularAArrayList(pastorList.getCabeza());
         controllerVista.actualizarMesaYPila(pastores, pila);
         controllerVista.mostrarJuego();
         direccion = controllerVista.pedirDireccion();
-
     }
 
     /**
@@ -142,14 +141,14 @@ public final class Controller {
      * 
      */
     public void eliminarVecino(int pasos) {
+        System.out.println("\n Atacando----------------------------\n");
         if(validarPilaVacia()){
-            System.out.println("turn actual: " + turnoActual.getNombre() + ", posición: " + turnoActual.getPosicion() + ", pasos: " + pasos + ", dirección: " + direccion);
             controllerJuego.eliminarPastorMenosFeligreses(turnoActual, direccion, pasos);
         }else{
             controllerJuego.eliminarVecino(turnoActual, direccion, pasos);
         }
-        llenarListaAuxiliar();
         cambioDeTurno();
+        pastores = convertirListaCircularAArrayList(pastorList.getCabeza());
         controllerVista.actualizarMesaYPila(pastores, pila);
     }
 
@@ -160,8 +159,9 @@ public final class Controller {
      */
     public void rescatarDePila() {
         if(!validarPilaVacia()){
-            controllerJuego.resucitarDesdePila(turnoActual);
-            controllerVista.mostrarMensaje("El pastor " + turnoActual.getNombre() + " ha sido resucitado.");
+            Pastor resucitado = controllerJuego.resucitarDesdePila(turnoActual);
+            controllerVista.mostrarMensaje("El pastor " + resucitado.getNombre() + " ha sido resucitado.");
+            pastores = convertirListaCircularAArrayList(pastorList.getCabeza());
             controllerVista.actualizarMesaYPila(pastores, pila);
             cambioDeTurno();
         }
@@ -177,6 +177,12 @@ public final class Controller {
         controllerJuego.resucitarDesdePila(turnoActual);
     }
 
+    /*
+     * El pastor más pobre roba un tercio de los recursos al más rico.
+     *
+     * @param pobre Pastor más pobre
+     * @param rico Pastor más rico
+     */
     public void robarRicoAPobre() {
         if(turnoActual.equals(pastorMasPobre())){
             controllerJuego.robarUnTercio(pastorMasPobre(), pastorMasRico());
@@ -185,7 +191,6 @@ public final class Controller {
         }else{
             controllerVista.mostrarMensaje("Solo el pastor más pobre puede robar.");
         }
-        
     }
 
     
@@ -194,24 +199,37 @@ public final class Controller {
      * Actualiza la vista para mostrar el nuevo turno.
      */
     public void cambioDeTurno(){
+        System.out.println("turn actual: " + turnoActual.getNombre() + ", posición: ");
+        System.out.println("Cambiando turno en dirección: " + direccion);
         if (direccion.equals("derecha")) {
             turnoActual = pastorList.obtenerSiguiente(turnoActual);
+            System.out.println("turn actual: " + turnoActual.getNombre() + ", posición: ");
         } else {
             turnoActual = pastorList.obtenerAnterior(turnoActual);
+            System.out.println("turn actual: " + turnoActual.getNombre() + ", posición: ");
         }
         controllerVista.mostrarTurno(turnoActual);
     }
 
-    public void llenarListaAuxiliar(){
-        pastores.clear(); // Limpiar la lista antes de llenarla
+    /*
+     * Convierte la lista circular de pastores en un ArrayList para facilitar su uso en la vista.
+     * @param cabeza Nodo cabeza de la lista circular.
+     * @return ArrayList con los pastores en orden.
+     */
+    public ArrayList<Pastor> convertirListaCircularAArrayList(NodoDoble<Pastor> cabeza) {
+        ArrayList<Pastor> lista = new ArrayList<>();
 
-        // Llenar la lista auxiliar para la vista
-        System.out.println("tamaño lista circular: " + pastorList.getTamanno());
-        for (int i = 0; i < pastorList.getTamanno(); i++) {
-            pastores.add(pastorList.obtenerPastorPorPosicion(i));
-            System.out.println("Pastor en lista auxiliar: " + pastores.get(i).getNombre());
+        if (cabeza == null) {
+            return lista; // lista vacía
         }
 
+        NodoDoble<Pastor> actual = cabeza;
+        do {
+            lista.add(actual.getDato()); // suponiendo que Nodo tiene un Pastor como dato
+            actual = actual.getSiguiente();
+        } while (actual != cabeza); // cuando vuelve a la cabeza, se detiene
+
+        return lista;
     }
 
     // ========================

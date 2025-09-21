@@ -7,10 +7,12 @@ import view.JuegoFrame;
 public final class ControllerVista {
     private Controller controller;
     private JuegoFrame juegoFrame;
+    private final int PASOS;
 
     public ControllerVista(Controller controller) {
         this.controller = controller;
         this.juegoFrame = new JuegoFrame();
+        this.PASOS = 1; // Número fijo de pasos para eliminar vecino
         agregarAcciones();
     }
 
@@ -40,7 +42,7 @@ public final class ControllerVista {
 
     public void agregarAcciones() {
         juegoFrame.setBtnAtacarListener(e -> {
-            controller.eliminarVecino(controller.getTurnoActual().getPosicion()); // Eliminar vecino a partir de la posición actual
+            controller.eliminarVecino(PASOS); // Eliminar vecino a partir de la posición actual
         });
         juegoFrame.setBtnResucitarListener(e -> {
             controller.resucitarDePila(); // Resucitar desde pila

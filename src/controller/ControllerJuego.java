@@ -93,7 +93,9 @@ public class ControllerJuego {
                     throw new IllegalArgumentException("Dirección inválida: use 'derecha' o 'izquierda'");
             }
         }
-        modificarPosiciones(nodoActual.getDato());
+        System.out.println("\nEliminando vecino: " + nodoActual.getDato().getNombre()
+         + " con creyentes: " + nodoActual.getDato().getCreyentes() + ", dinero: " + nodoActual.getDato().getDinero()+"\n");
+        
         pastorList.eliminar(nodoActual.getDato());
         pila.add(nodoActual.getDato());
         reorganizarMesa();
@@ -136,6 +138,8 @@ public class ControllerJuego {
 
             Pastor p = candidato.getDato();
             if (p.getCreyentes() < menosFeligreses.getCreyentes()) {
+                System.out.println("\nComparando: " + p.getNombre() + " (" + p.getCreyentes() + " creyentes) < "
+                        + menosFeligreses.getNombre() + " (" + menosFeligreses.getCreyentes() + " creyentes)\n");
                 menosFeligreses = p;
             }
         }
@@ -143,8 +147,9 @@ public class ControllerJuego {
         // Transferimos recursos del pastor eliminado al actual
         actual.setCreyentes(actual.getCreyentes() + menosFeligreses.getCreyentes());
         actual.setDinero(actual.getDinero() + menosFeligreses.getDinero());
+        System.out.println("\nEliminando pastor: " + menosFeligreses.getNombre()
+         + " con creyentes: " + menosFeligreses.getCreyentes() + ", dinero: " + menosFeligreses.getDinero()+"\n");
 
-        modificarPosiciones(menosFeligreses);
         // Eliminamos al que tiene menos creyentes
         pastorList.eliminar(menosFeligreses);
         pila.add(menosFeligreses);
@@ -155,15 +160,7 @@ public class ControllerJuego {
         reorganizarMesa();
     }
 
-    public void modificarPosiciones(Pastor pastorEliminado) {
-        //modificar posicion de los pastores en la lista
-        for (int i = 0; i < pastorList.getTamanno(); i++) {
-            Pastor p = pastorList.obtenerPastorPorPosicion(i);
-            if (p.getPosicion() > pastorEliminado.getPosicion()) {
-                p.setPosicion(p.getPosicion() - 1);
-            }
-        }
-    }
+
 
     /**
      * Resucita al último pastor de la pila, dándole la mitad
@@ -171,8 +168,30 @@ public class ControllerJuego {
      *
      * @param actual Pastor que decide resucitar
      */
-    public void resucitarDesdePila(Pastor actual) {
-        // TODO: implementar
+    public Pastor resucitarDesdePila(Pastor actual) {
+        if (pila.isEmpty()) {
+            return null; // no hay pastores para resucitar
+        }
+
+        Pastor resucitado = pila.remove(pila.size() - 1); // sacamos el último de la pila
+        System.out.println("\nSacando de la pila a: " + resucitado.getNombre() + "\n");
+
+        for(Pastor p : pila) {
+            System.out.println("\nPila contiene: " + p.getNombre());
+        }
+
+        // Transferimos la mitad de los recursos del pastor actual al resucitado
+        int dineroTransferido = actual.getDinero() / 2;
+        int creyentesTransferidos = actual.getCreyentes() / 2;
+
+        resucitado.setDinero(resucitado.getDinero() + dineroTransferido);
+        resucitado.setCreyentes(resucitado.getCreyentes() + creyentesTransferidos);
+
+        pastorList.insertarAlFinal(resucitado); // lo añadimos de nuevo a la lista
+        System.out.println("\nResucitando pastor: " + resucitado.getNombre()
+         + " con creyentes: " + resucitado.getCreyentes() + ", dinero: " + resucitado.getDinero()+"\n");
+        reorganizarMesa();
+        return resucitado;
     }
 
     /**

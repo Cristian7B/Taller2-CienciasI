@@ -15,10 +15,9 @@ public class ControllerPastor {
             Pastor pastor = new Pastor(new Random().nextInt(1000), new Random().nextInt(500));
             pastor.generarNombreCompleto();
             pastor.generarOficio();
-            pastor.setPosicion(i);
             controller.getPastorList().insertarAlFinal(pastor);
             System.out.println("Creado pastor: " + pastor.getNombre() + " con oficio: " + pastor.getOficio() 
-            + ", dinero: " + pastor.getDinero() + ", creyentes: " + pastor.getCreyentes() + ", posición: " + pastor.getPosicion());
+            + ", dinero: " + pastor.getDinero() + ", creyentes: " + pastor.getCreyentes());
         }
     }
 

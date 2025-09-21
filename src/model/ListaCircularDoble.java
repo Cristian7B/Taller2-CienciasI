@@ -462,27 +462,6 @@ public class ListaCircularDoble<T> {
         return (Pastor) this.ultimo.getDato();
     }
 
-    /*
-     * Devuelve el pastor que tiene la posición especificada.
-     * Si no se encuentra ningún pastor con esa posición, devuelve null.
-     * La búsqueda es O(n).
-     * @param posicion La posición del pastor a buscar.
-     * @return El pastor con la posición dada, o null si no se encuentra.
-     */
-    public Pastor obtenerPastorPorPosicion(int posicion) {
-        if (estaVacia()) {
-            return null;
-        }
-        NodoDoble<T> actual = getCabeza();
-        for (int i = 0; i < this.tamanno; i++) {
-            Pastor pastor = (Pastor) actual.getDato();
-            if (pastor.getPosicion() == posicion) {
-                return pastor;
-            }
-            actual = actual.getSiguiente();
-        }
-        return null; // No se encontró ningún pastor con la posición dada
-    }
 
 
     /**
