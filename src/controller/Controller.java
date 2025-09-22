@@ -1,66 +1,51 @@
 package controller;
 
-import view.JuegoFrame;
-
 public final class Controller {
-
-
-    private final JuegoFrame juegoFrame;
-
+    private ControllerVista controllerVista;
+    private ControllerPastor controllerPastor;
+    private ListaCircularDoble<Pastor> pastorList;
     
     public Controller() {
-        this.juegoFrame = new JuegoFrame();
+        this.controllerVista = new ControllerVista(this);
+        this.controllerPastor = new ControllerPastor(this);
+        this.pastorList = new ListaCircularDoble<>();
         run();
     }
 
     public void run() {
         int numJugadores = validarJugadores();
-        crearListaPastores(numJugadores);
-        mostrarJuego();
+        controllerPastor.crearListaPastores(numJugadores);
+        controllerVista.mostrarJuego();
     }
 
 
     public int validarJugadores() {
         int numJugadoresInt;
-        String numJugadores = pedirJugadores();
+        String numJugadores = controllerVista.pedirJugadores();
+
         if(numJugadores == null || numJugadores.isEmpty()) {
-            juegoFrame.mostrarMensaje("Número inválido. Por favor, ingrese un número entre 2 y 9.");
+            controllerVista.mostrarMensaje("Número inválido. Por favor, ingrese un número entre 2 y 9.");
         }
+        
         try {
             numJugadoresInt = Integer.parseInt(numJugadores);
         } catch (NumberFormatException e) {
             numJugadoresInt = 0;
         }
+        
         while (numJugadoresInt < 2 || numJugadoresInt > 9) {
-            juegoFrame.mostrarMensaje("Entrada inválida. Por favor, ingrese un número entre 2 y 9.");
+            controllerVista.mostrarMensaje("Entrada inválida. Por favor, ingrese un número entre 2 y 9.");
             numJugadoresInt = validarJugadores();
         }
-        llenarPastores(numJugadoresInt);
+        
         return numJugadoresInt;
     }
 
-    private void llenarPastores(int n) {
-        for (int i = 1; i <= n; i++) {
-            
-        }
+    public ListaCircularDoble<Pastor> getPastorList() {
+        return pastorList;
     }
 
-    public void crearListaPastores(int n) {
-        
+    public void setPastorList(ListaCircularDoble<Pastor> pastorList) {
+        this.pastorList = pastorList;
     }
-
-    public void mostrarJuego() {
-        juegoFrame.setVisible(true);
-    }
-
-    private String pedirJugadores() {
-        return juegoFrame.cantidadJugadores();
-    }
-
-
-    public JuegoFrame getJuegoFrame() {
-        return juegoFrame;
-    }
-
-
 }
