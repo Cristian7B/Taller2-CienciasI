@@ -103,7 +103,7 @@ public final class Controller {
     public boolean validarJugadores(String numJugadores) {
         try {
             int num = Integer.parseInt(numJugadores);
-            return num >= 2 && num <= 6;
+            return num >= 2 && num <= 10;
         } catch (NumberFormatException e) {
             return false;
         }
