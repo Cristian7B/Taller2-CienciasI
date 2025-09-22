@@ -43,12 +43,24 @@ public final class ControllerVista {
     public void agregarAcciones() {
         juegoFrame.setBtnAtacarListener(e -> {
             controller.eliminarVecino(PASOS); // Eliminar vecino a partir de la posición actual
+            if(controller.getControllerJuego().verificarFinJuego()) {
+                juegoFrame.mostrarMensaje("Fin del juego. Ganador: " + controller.getControllerJuego().getPastorGanador().getNombre());
+                System.exit(0);
+            }
         });
         juegoFrame.setBtnResucitarListener(e -> {
-            controller.resucitarDePila(); // Resucitar desde pila
+            controller.rescatarDePila(); // Resucitar desde pila
+            if(controller.getControllerJuego().verificarFinJuego()) {
+                juegoFrame.mostrarMensaje("Fin del juego. Ganador: " + controller.getControllerJuego().getPastorGanador().getNombre());
+                System.exit(0);
+            };
         });
         juegoFrame.setBtnRobarListener(e -> {
             controller.robarRicoAPobre();
+            if(controller.getControllerJuego().verificarFinJuego()) {
+                juegoFrame.mostrarMensaje("Fin del juego. Ganador: " + controller.getControllerJuego().getPastorGanador().getNombre());
+                System.exit(0);
+            };
         });
     }
 

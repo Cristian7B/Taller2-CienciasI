@@ -57,7 +57,7 @@ public final class Controller {
         this.pastorList = new ListaCircularDoble<>();
         this.pastores = new ArrayList<>();
         this.pila = new ArrayList<>();
-        this.controllerJuego = new ControllerJuego(pastorList, pila);
+        this.controllerJuego = new ControllerJuego(pastorList, pila, this);
         this.direccion = ""; // Dirección inicial por defecto
         this.turnoActual = null;
         run();
@@ -74,10 +74,12 @@ public final class Controller {
     public void run() {
         controllerVista.mostrarMensaje("¡Bienvenido al juego de Pastores!");
         String jugadores = controllerVista.pedirJugadores();
+
         while (!validarJugadores(jugadores)) {
             controllerVista.mostrarMensaje("Número inválido de jugadores. Por favor, ingrese un número entre 2 y 6.");
             jugadores = controllerVista.pedirJugadores();
         }
+        
         int numJugadores = Integer.parseInt(jugadores);
         controllerPastor.crearListaPastores(numJugadores);
 
@@ -165,16 +167,6 @@ public final class Controller {
             controllerVista.actualizarMesaYPila(pastores, pila);
             cambioDeTurno();
         }
-    }
-
-    /*
-     * Resucita al último pastor de la pila, dándole la mitad
-     * de los recursos del pastor actual.
-     *
-     * @param actual Pastor que decide resucitar
-     */
-    public void resucitarDePila() {
-        controllerJuego.resucitarDesdePila(turnoActual);
     }
 
     /*

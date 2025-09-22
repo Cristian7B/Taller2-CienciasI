@@ -7,33 +7,36 @@ import model.Pastor;
 
 /**
  * Controlador encargado de manejar la lógica principal del juego de Pastores.
- * Define las reglas del turno, eliminación, resurrección, robo y fin de partida.
+ * Define las reglas del turno, eliminación, resurrección, robo y fin de
+ * partida.
  */
 public class ControllerJuego {
 
     private ListaCircularDoble<Pastor> pastorList;
     private ArrayList<Pastor> pila;
 
+    private Controller controller;
+
     /**
      * Constructor que recibe la lista circular de pastores y la pila de eliminados.
      *
      * @param pastorList lista circular doble de los pastores activos en el juego
-     * @param pila pila (LIFO) de los pastores eliminados
+     * @param pila       pila (LIFO) de los pastores eliminados
+     * @param controller referencia al controlador principal del juego
      */
-    public ControllerJuego(ListaCircularDoble<Pastor> pastorList, ArrayList<Pastor> pila) {
+    public ControllerJuego(ListaCircularDoble<Pastor> pastorList, ArrayList<Pastor> pila, Controller controller) {
         this.pastorList = pastorList;
+        this.controller = controller;
         this.pila = pila;
     }
 
-
-
-
     /**
-     * Obtiene un vecino a partir de un pastor actual, en cierta dirección y número de pasos.
+     * Obtiene un vecino a partir de un pastor actual, en cierta dirección y número
+     * de pasos.
      *
-     * @param actual Pastor actual en turno
+     * @param actual    Pastor actual en turno
      * @param direccion "izquierda" o "derecha"
-     * @param pasos número de posiciones a recorrer
+     * @param pasos     número de posiciones a recorrer
      * @return Pastor vecino encontrado
      */
     public Pastor obtenerVecino(Pastor actual, String direccion, int pasos) {
@@ -67,12 +70,12 @@ public class ControllerJuego {
      * Elimina al vecino con menos feligreses entre los contados
      * y lo envía a la pila, transfiriendo sus recursos al pastor actual.
      *
-     * @param actual Pastor que elimina
+     * @param actual    Pastor que elimina
      * @param direccion dirección del conteo
-     * @param pasos número de pasos a recorrer
+     * @param pasos     número de pasos a recorrer
      */
     public boolean eliminarVecino(Pastor actual, String direccion, int pasos) {
-        if(pastorList.estaVacia()){
+        if (pastorList.estaVacia()) {
             return false;
         }
         NodoDoble<Pastor> nodoActual = pastorList.buscarNodo(actual);
@@ -94,8 +97,9 @@ public class ControllerJuego {
             }
         }
         System.out.println("\nEliminando vecino: " + nodoActual.getDato().getNombre()
-         + " con creyentes: " + nodoActual.getDato().getCreyentes() + ", dinero: " + nodoActual.getDato().getDinero()+"\n");
-        
+                + " con creyentes: " + nodoActual.getDato().getCreyentes() + ", dinero: "
+                + nodoActual.getDato().getDinero() + "\n");
+
         pastorList.eliminar(nodoActual.getDato());
         pila.add(nodoActual.getDato());
         reorganizarMesa();
@@ -106,9 +110,9 @@ public class ControllerJuego {
      * Elimina al vecino con menos feligreses entre los contados
      * y lo envía a la pila, transfiriendo sus recursos al pastor actual.
      *
-     * @param actual Pastor que elimina
+     * @param actual    Pastor que elimina
      * @param direccion dirección del conteo
-     * @param pasos número de pasos a recorrer
+     * @param pasos     número de pasos a recorrer
      */
     public void eliminarPastorMenosFeligreses(Pastor actual, String direccion, int pasos) {
         if (pastorList.estaVacia()) {
@@ -128,7 +132,6 @@ public class ControllerJuego {
                 : nodoActual.getAnterior();
 
         Pastor menosFeligreses = candidato.getDato();
-        
 
         // Recorremos hasta "pasos" vecinos
         for (int i = 1; i < pasos; i++) {
@@ -148,19 +151,18 @@ public class ControllerJuego {
         actual.setCreyentes(actual.getCreyentes() + menosFeligreses.getCreyentes());
         actual.setDinero(actual.getDinero() + menosFeligreses.getDinero());
         System.out.println("\nEliminando pastor: " + menosFeligreses.getNombre()
-         + " con creyentes: " + menosFeligreses.getCreyentes() + ", dinero: " + menosFeligreses.getDinero()+"\n");
+                + " con creyentes: " + menosFeligreses.getCreyentes() + ", dinero: " + menosFeligreses.getDinero()
+                + "\n");
 
         // Eliminamos al que tiene menos creyentes
         pastorList.eliminar(menosFeligreses);
         pila.add(menosFeligreses);
         for (Pastor p : pila) {
             System.out.println("Pila contiene: " + p.getNombre());
-            
+
         }
         reorganizarMesa();
     }
-
-
 
     /**
      * Resucita al último pastor de la pila, dándole la mitad
@@ -176,7 +178,7 @@ public class ControllerJuego {
         Pastor resucitado = pila.remove(pila.size() - 1); // sacamos el último de la pila
         System.out.println("\nSacando de la pila a: " + resucitado.getNombre() + "\n");
 
-        for(Pastor p : pila) {
+        for (Pastor p : pila) {
             System.out.println("\nPila contiene: " + p.getNombre());
         }
 
@@ -189,8 +191,10 @@ public class ControllerJuego {
 
         pastorList.insertarAlFinal(resucitado); // lo añadimos de nuevo a la lista
         System.out.println("\nResucitando pastor: " + resucitado.getNombre()
-         + " con creyentes: " + resucitado.getCreyentes() + ", dinero: " + resucitado.getDinero()+"\n");
+                + " con creyentes: " + resucitado.getCreyentes() + ", dinero: " + resucitado.getDinero() + "\n");
         reorganizarMesa();
+        controller.getControllerVista().getJuegoFrame().revalidate();
+        controller.getControllerVista().getJuegoFrame().repaint();
         return resucitado;
     }
 
@@ -203,7 +207,7 @@ public class ControllerJuego {
         Pastor masPobre = pastorList.obtenerMasRico((p1, p2) -> Integer.compare(p2.getDinero(), p1.getDinero()));
         return masPobre;
     }
-    
+
     /**
      * Obtiene el pastor más rico de la mesa.
      *
@@ -218,7 +222,7 @@ public class ControllerJuego {
      * El pastor más pobre roba un tercio de los recursos al más rico.
      *
      * @param pobre Pastor más pobre
-     * @param rico Pastor más rico
+     * @param rico  Pastor más rico
      */
     public void robarUnTercio(Pastor pobre, Pastor rico) {
         if (pobre == null || rico == null) {
@@ -238,9 +242,76 @@ public class ControllerJuego {
     /**
      * Reorganiza la mesa para asegurar que a la derecha de un pastor
      * no se encuentre otro con el mismo oficio.
+     * Utiliza un algoritmo similar al ordenamiento por inserción:
+     * - Itera con un for hacia adelante
+     * - Utiliza un while hacia atrás para reposicionar pastores cuando es necesario
      */
     public void reorganizarMesa() {
-        // TODO: implementar
+        System.out.println("Reorganizando mesa...");
+
+        if (pastorList.estaVacia() || pastorList.getTamanno() <= 1) {
+            System.out.println("No hay suficientes pastores para reorganizar");
+            return;
+        }
+
+        int maxIntentos = pastorList.getTamanno() * 2; 
+        int intentosRealizados = 0;
+        boolean hayConflictos = true;
+
+        while (hayConflictos && intentosRealizados < maxIntentos) {
+            hayConflictos = false;
+            intentosRealizados++;
+
+            NodoDoble<Pastor> nodoActual = pastorList.getCabeza();
+            int tamanio = pastorList.getTamanno();
+
+            for (int i = 0; i < tamanio && !hayConflictos; i++) {
+                NodoDoble<Pastor> pastorActual = nodoActual;
+                NodoDoble<Pastor> pastorDerecha = pastorActual.getSiguiente();
+
+                if (pastorActual.getDato().getOficio().equals(pastorDerecha.getDato().getOficio())) {
+                    System.out.println("Conflicto encontrado: " + pastorActual.getDato().getNombre()
+                            + " (" + pastorActual.getDato().getOficio() + ") tiene el mismo oficio que "
+                            + pastorDerecha.getDato().getNombre() + " (" + pastorDerecha.getDato().getOficio() + ")");
+
+                    hayConflictos = true;
+
+                    Pastor pastorConflictivo = pastorDerecha.getDato();
+                    pastorList.eliminar(pastorConflictivo);
+
+                    NodoDoble<Pastor> posicionInsercion = pastorActual;
+                    boolean posicionEncontrada = false;
+                    int pasosBusqueda = 0;
+
+                    while (!posicionEncontrada && pasosBusqueda < pastorList.getTamanno()) {
+                        posicionInsercion = posicionInsercion.getAnterior();
+                        pasosBusqueda++;
+
+                        String oficioAnterior = posicionInsercion.getDato().getOficio();
+                        String oficioSiguiente = posicionInsercion.getSiguiente().getDato().getOficio();
+
+                        if (!pastorConflictivo.getOficio().equals(oficioAnterior) &&
+                                !pastorConflictivo.getOficio().equals(oficioSiguiente)) {
+                            posicionEncontrada = true;
+                            System.out.println("Posición adecuada encontrada después de "
+                                    + posicionInsercion.getDato().getNombre());
+                        }
+                    }
+
+                    if (posicionEncontrada) {
+                        pastorList.insertarDespuesDe(posicionInsercion.getDato(), pastorConflictivo);
+                        System.out.println("Pastor " + pastorConflictivo.getNombre() + " reubicado exitosamente");
+                    } else {
+                        pastorList.insertarAlFinal(pastorConflictivo);
+                        System.out.println(
+                                "Pastor " + pastorConflictivo.getNombre() + " insertado al final como alternativa");
+                    }
+                    break;
+                } else {
+                    nodoActual = nodoActual.getSiguiente();
+                }
+            }
+        }
     }
 
     /**
@@ -249,8 +320,50 @@ public class ControllerJuego {
      * @return true si queda un solo pastor en la lista, false en otro caso
      */
     public boolean verificarFinJuego() {
-        // TODO: implementar
+        if (pastorList.getTamanno() == 1) {
+            System.out.println("Juego terminado. Ganador: " + pastorList.getCabeza().getDato().getNombre());
+            return true;
+        }
         return false;
+    }
+
+    /**
+     * Método para obtener el ganador
+     * 
+     * @return Pastor ganador
+     */
+    public Pastor getPastorGanador() {
+        if (pastorList.getTamanno() == 1) {
+            return pastorList.getCabeza().getDato();
+        }
+        return null; 
+    }
+
+    /**
+     * Verifica si existen conflictos de oficios en la mesa
+     * (pastores con el mismo oficio sentados uno al lado del otro).
+     *
+     * @return true si hay conflictos, false si la mesa está correctamente
+     *         organizada
+     */
+    public boolean hayConflictosOficio() {
+        if (pastorList.estaVacia() || pastorList.getTamanno() <= 1) {
+            return false;
+        }
+
+        NodoDoble<Pastor> nodoActual = pastorList.getCabeza();
+
+        for (int i = 0; i < pastorList.getTamanno(); i++) {
+            Pastor pastorActual = nodoActual.getDato();
+            Pastor pastorDerecha = nodoActual.getSiguiente().getDato();
+
+            if (pastorActual.getOficio().equals(pastorDerecha.getOficio())) {
+                return true; // Se encontró un conflicto
+            }
+            nodoActual = nodoActual.getSiguiente();
+        }
+
+        return false; // No se encontraron conflictos
     }
 
     // Getters y setters opcionales
