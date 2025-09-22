@@ -1,6 +1,7 @@
 package model;
 
 
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -63,7 +64,7 @@ public class ListaCircularDoble<T> {
      * El acceso es O(1) a través de la referencia {@code ultimo}.
      * @return El {@link NodoDoble} cabeza, o {@code null} si la lista está vacía.
      */
-    private NodoDoble<T> getCabeza() {
+    public NodoDoble<T> getCabeza() {
         // Si no está vacía, la cabeza es el siguiente del último nodo.
         return estaVacia() ? null : this.ultimo.getSiguiente();
     }
@@ -400,6 +401,69 @@ public class ListaCircularDoble<T> {
         return clon;
     }
 
+
+    /*
+     * Devuelve el elemento que sigue al nodo que contiene {@code datoActual}.
+     * Si {@code datoActual} no se encuentra, devuelve {@code null}.
+     * La búsqueda es O(n).
+     * @param datoActual El dato del nodo actual.
+     * @return El dato del siguiente nodo, o {@code null} si no se encuentra.
+     * @throws NoSuchElementException si la lista está vacía.
+     */
+    public T obtenerSiguiente(T datoActual) {
+        NodoDoble<T> nodoActual = buscarNodo(datoActual);
+        if (nodoActual == null) {
+            return null; // No se encontró el nodo con el dato dado
+        }
+        return nodoActual.getSiguiente().getDato();
+    }
+
+    /*
+     * Devuelve el elemento que precede al nodo que contiene {@code datoActual}.
+     * Si {@code datoActual} no se encuentra, devuelve {@code null}.
+     * La búsqueda es O(n).
+     * @param datoActual El dato del nodo actual.
+     * @return El dato del nodo anterior, o {@code null} si no se encuentra.
+     * @throws NoSuchElementException si la lista está vacía.
+     */
+    public T obtenerAnterior(T datoActual) {
+        NodoDoble<T> nodoActual = buscarNodo(datoActual);
+        if (nodoActual == null) {
+            return null; // No se encontró el nodo con el dato dado
+        }
+        return nodoActual.getAnterior().getDato();
+    }
+
+
+    /*
+     * Devuelve el pastor más rico según el dinero.
+     * Si la lista está vacía, devuelve null.
+     * Recorre toda la lista una vez, comparando cada pastor con el más rico encontrado
+     * hasta el momento.
+     * @return El pastor más rico, o null si la lista está vacía.
+     */
+    public Pastor obtenerPrimerPastor() {
+        if (estaVacia()) {
+            return null;
+        }
+        return (Pastor) getCabeza().getDato();
+    }
+
+
+    /*
+     * Devuelve el último pastor en la lista.
+     * Si la lista está vacía, devuelve null.
+     * @return El último pastor, o null si la lista está vacía.
+     */
+    public Pastor obtenerUltimoPastor() {
+        if (estaVacia()) {
+            return null;
+        }
+        return (Pastor) this.ultimo.getDato();
+    }
+
+
+
     /**
      * Imprime una representación textual de la lista circular en la consola estándar.
      * Muestra los elementos desde la cabeza, indicando la conexión final a la cabeza.
@@ -433,7 +497,7 @@ public class ListaCircularDoble<T> {
      * @param datoBusqueda El dato a buscar.
      * @return El {@link NodoDoble} que contiene el dato, o {@code null} si no se encuentra.
      */
-    private NodoDoble<T> buscarNodo(T datoBusqueda) {
+    public NodoDoble<T> buscarNodo(T datoBusqueda) {
         if (estaVacia()) {
             return null;
         }
@@ -446,6 +510,34 @@ public class ListaCircularDoble<T> {
         }
         return null; // No encontrado después de una vuelta completa
     }
+
+    
+    /*
+     * Busca y devuelve el elemento "más rico" según el comparador proporcionado.
+     * Si la lista está vacía, devuelve null.
+     * Recorre toda la lista una vez, comparando cada elemento con el mejor encontrado
+     * hasta el momento.
+     * @param comparador El comparador que define el criterio de "más rico".
+     * @return El elemento "más rico", o null si la lista está vacía.
+     * @throws NullPointerException si el comparador es null.
+     */
+    public T obtenerMasRico(Comparator<T> comparador) {
+        if (estaVacia()){
+            return null;
+        }
+        NodoDoble<T> actual = getCabeza();
+        T mejor = actual.getDato();
+
+        for (int i = 0; i < this.tamanno; i++) {
+            T candidato = actual.getDato();
+            if (comparador.compare(candidato, mejor) > 0) {
+                mejor = candidato;
+            }
+            actual = actual.getSiguiente();
+        }
+        return mejor;
+    }
+
 
     /**
      * Busca el nodo que precede inmediatamente al primer nodo que contiene {@code datoBusqueda}.

@@ -59,4 +59,5 @@ public class Pastor {
         this.oficio = oficio;
     }
 
+
 }
